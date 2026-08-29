@@ -1,0 +1,12 @@
+dataset:
+  name: CIFAR10
+
+model:
+  name: resnet18
+  num_classes: 10
+
+training:
+  batch_size: 64
+  learning_rate: 0.001
+  epochs: 10
+  early_stopping_patience: 3
