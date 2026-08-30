@@ -24,7 +24,7 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: MODEL_PATH
-              value: /app/checkpoints/classifier_v1.pt
+              value: /app/checkpoints/best_model.pth
           ports:
             - containerPort: 8080
           resources:
@@ -38,14 +38,16 @@ spec:
             httpGet:
               path: /health
               port: 8080
+            initialDelaySeconds: 60
             periodSeconds: 10
             failureThreshold: 3
           readinessProbe:
             httpGet:
               path: /health
               port: 8080
-            periodSeconds: 5
             initialDelaySeconds: 15
+            periodSeconds: 5
+            failureThreshold: 3
           volumeMounts:
             - name: checkpoints
               mountPath: /app/checkpoints
