@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cifar10-data-pvc
+  namespace: ml-training
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cifar10-checkpoints-pvc
+  namespace: ml-training
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: model-training
+  namespace: ml-training
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: trainer
+          image: mlops-cifar-train:v1
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: "2"
+              memory: "4Gi"
+            limits:
+              cpu: "2"
+              memory: "4Gi"
+          volumeMounts:
+            - name: training-config
+              mountPath: /app/configs
+              readOnly: true
+            - name: data
+              mountPath: /app/data
+            - name: checkpoints
+              mountPath: /app/checkpoints
+      volumes:
+        - name: training-config
+          configMap:
+            name: training-config
+        - name: data
+          persistentVolumeClaim:
+            claimName: cifar10-data-pvc
+        - name: checkpoints
+          persistentVolumeClaim:
+            claimName: cifar10-checkpoints-pvc
