@@ -1,0 +1,22 @@
+FROM python:3.11-slim AS builder
+
+WORKDIR /app
+
+COPY requirements/train.txt requirements/train.txt
+
+RUN pip install --no-cache-dir --prefix=/install -r requirements/train.txt
+
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY --from=builder /install /usr/local
+
+COPY src ./src
+COPY configs ./configs
+COPY data ./data
+COPY checkpoints ./checkpoints
+COPY outputs ./outputs
+
+CMD ["python", "src/train.py"]
