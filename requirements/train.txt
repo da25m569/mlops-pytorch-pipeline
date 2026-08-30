@@ -1,0 +1,10 @@
+torch
+torchvision
+fastapi
+uvicorn
+pyyaml
+pillow
+numpy
+scikit-learn
+tqdm
+pytest
